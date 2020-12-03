@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FogGUIHelper } from './Helpers/helpers.js';
+import * as dat from 'dat.gui';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +18,7 @@ export class AppComponent implements OnInit {
   public camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 5);
   public controls = new OrbitControls(this.camera, this.renderer.domElement);
   public directLight = new THREE.DirectionalLight('white', 1);
+  public gui = new dat.GUI();
 
   ngOnInit() {
     this.init();
@@ -33,6 +36,11 @@ export class AppComponent implements OnInit {
       const color = 'lightblue';
       this.scene.fog = new THREE.Fog(color, near, far);
       this.scene.background = new THREE.Color(color);
+
+      const fogGuiHelper = new FogGUIHelper(this.scene.fog, this.scene.background);
+      this.gui.add(fogGuiHelper, 'near', near, far).listen();
+      this.gui.add(fogGuiHelper, 'far', near, far).listen();
+      this.gui.addColor(fogGuiHelper, 'color');
     }
 
     this.directLight.position.set(-1, 2, 4);
@@ -48,8 +56,8 @@ export class AppComponent implements OnInit {
 
     const cubes = [
       this.makeInstance(geometry, 0x44aa88, 0),
-      this.makeInstance(geometry, 0x8844aa, 0),
-      this.makeInstance(geometry, 0x44aa88, 0)
+      this.makeInstance(geometry, 0x8844aa, -2),
+      this.makeInstance(geometry, 0x4488aa, 2)
     ]
 
     // =============================================================== Resize ===========================================================
